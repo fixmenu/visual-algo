@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { EventManager, AlgorithmEvent } from '@/components/core/EventManager';
-import { ObsArray } from '@/components/core/ObsArray';
-import { ObsVar } from '@/components/core/ObsVar';
+import EventManager from '../core/EventManager'; // Corrected default import
+import AlgorithmEvent from '../core/AlgorithmEvent'; // Corrected default import
+import { ObsArray } from '../core/ObsArray'; // Adjusted path
+import { ObsVar } from '../core/ObsVar'; // Adjusted path
 import { Subject, of, Subscription } from 'rxjs';
 import { concatMap, delay, catchError, tap } from 'rxjs/operators';
 
@@ -50,14 +51,14 @@ export const useAlgorithmRunner = (): UseAlgorithmRunnerResult => {
     const subscription = newEventManager.observable
       .pipe(
         concatMap(event => of(event).pipe(delay(EXECUTION_DELAY))),
-        tap(event => {
+        tap((event: AlgorithmEvent) => { // Explicitly type event
           console.log('Processing event:', event); // For debugging
           setObservablesState(prevState => ({
             ...prevState,
             [event.key]: event.value,
           }));
         }),
-        catchError((err) => {
+        catchError((err: any) => { // Explicitly type error
           console.error('Error in event stream:', err);
           setErrorMessage(`Error processing events: ${err.message || err}`);
           setExecutionStatus('error');
